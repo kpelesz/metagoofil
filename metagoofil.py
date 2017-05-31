@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from discovery import googlesearch
 from extractors import *
 import urllib
@@ -39,13 +40,14 @@ def usage():
 
 
 global limit, start, password, all, localanalysis, dir, failedfiles
-limit = 100
+limit = 1000
 start = 0
 password = ""
 all = []
 dir = "test"
 def doprocess(argv):
-    filelimit = 50
+    limit = 1000
+    filelimit = 1000
     word = "local"
     localanalysis = "no"
     failedfiles = []
@@ -57,9 +59,7 @@ def doprocess(argv):
     except getopt.GetoptError:
         usage()
     for opt, arg in opts:
-        if opt == '-d':
-            word = arg
-        elif opt == '-t':
+        if opt == '-t':
             filetypes = []
             if arg.count(",") != 0:
                 filetypes = arg.split(",")
@@ -83,10 +83,11 @@ def doprocess(argv):
     if localanalysis == "no":
         print "\n[-] Starting online search..."
         for filetype in filetypes:
+	   with open ("list.txt", "r") as myfile:
+            word = myfile.read()
             print "\n[-] Searching for "+ filetype + " files, with a limit of " + str(limit)
-            search = googlesearch.search_google(word, limit, start, filetype)
-            search.process_files()
-            files = search.get_files()
+            delimiter = '\n'
+            files = word.split(delimiter)
             print "Results: " + str(len(files)) + " files found"
             print "Starting to download " + str(filelimit) + " of them:"
             print "----------------------------------------\n"
